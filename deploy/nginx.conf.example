@@ -1,0 +1,62 @@
+# 放入现有 nginx http 上下文；替换所有 __...__ 占位符后执行 nginx -t。
+# 此文件是配置示例，尚未针对实际服务器应用或验收。
+server {
+    listen 80;
+    server_name __BLOG_HOST__;
+    return 308 https://__BLOG_HOST__$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name __BLOG_HOST__;
+    ssl_certificate __CERT_FULLCHAIN__;
+    ssl_certificate_key __CERT_PRIVATE_KEY__;
+    root __FRONTEND_DIST__;
+    index index.html;
+    charset utf-8;
+
+    location = /api {
+        default_type application/json;
+        return 404 '{"code":404,"message":"资源不存在","data":null}';
+    }
+    location ^~ /api/ {
+        # 不加结尾 /，保留 /api 前缀。后端仅允许可信代理连接。
+        proxy_pass http://__BACKEND_HOST_PORT__;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Forwarded "";
+        proxy_intercept_errors off;
+        proxy_cache off;
+        add_header Cache-Control "no-store" always;
+    }
+    location ^~ /assets/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+    location ^~ /vendor/ {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache";
+    }
+    location ^~ /editor/ {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache";
+    }
+    location = /index.html {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache";
+    }
+    # 缺失静态文件返回真实 404，不把 index.html 当 JS/图片返回。
+    location ~* \.(?:js|mjs|css|map|json|png|jpe?g|gif|webp|svg|ico|woff2?|ttf|eot|mp3|flac|ogg|wav|mp4|webm|html|txt|xml|pdf)$ {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache";
+    }
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache";
+    }
+}

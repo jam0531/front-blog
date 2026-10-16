@@ -1,0 +1,7 @@
+html,body{margin:0;height:100%;overflow:hidden;background:#fff}
+#editor{margin:0;border:0;border-radius:0}
+.editormd-toolbar{background:#f5f8f3;border-color:#dfe5df}
+.editormd-toolbar a{color:#456255}
+.CodeMirror{font-family:Consolas,"Microsoft YaHei",monospace;font-size:14px;line-height:1.7}
+.CodeMirror-gutters{background:#fafbf8;border-color:#e8ede5}
+.editor-readonly .editormd-toolbar{pointer-events:none;opacity:.55}

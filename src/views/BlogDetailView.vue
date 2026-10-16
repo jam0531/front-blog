@@ -3,6 +3,7 @@ import { ref, watch, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { getBlog } from '../api/blog.js'
 import MarkdownContent from '../components/MarkdownContent.vue'
+import DiscussionThread from '../components/DiscussionThread.vue'
 const route = useRoute()
 const blog = ref(null)
 const loading = ref(false)
@@ -40,5 +41,6 @@ onBeforeUnmount(() => controller?.abort())
     <MarkdownContent :html="blog.contentHtml" />
     <aside v-if="blog.shareStatement" class="share-note">转载请注明作者及本文链接。</aside>
     <RouterLink to="/home">← 返回文章列表</RouterLink>
+    <DiscussionThread :key="blog.id" :blog-id="blog.id" :enabled="blog.commentAble" title="文章评论" />
   </article>
 </template>
