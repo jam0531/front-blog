@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findBlogs } from '../api/blog.js'
@@ -74,11 +75,11 @@ onBeforeUnmount(() => { controller?.abort(); optionsController.abort() })
         <label>年份<select v-model="form.year"><option value="">全部年份</option><option v-for="archive in archives" :key="archive.year" :value="String(archive.year)">{{ archive.year }}</option></select></label>
         <RouterLink class="clear-filters" to="/search">清除条件</RouterLink>
       </div>
-      <p v-if="catalogError" class="catalog-error" role="status">{{ catalogError }} <button type="button" @click="loadOptions">重试</button></p>
+      <div v-if="catalogError" class="catalog-error"><ErrorNotice :error="catalogError" /><button type="button" @click="loadOptions">重新加载筛选选项</button></div>
     </form>
     <section aria-label="文章列表" :aria-busy="loading">
       <div v-if="loading" class="browse-state" role="status">正在加载文章…</div>
-      <div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+      <div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载文章</button></div>
       <template v-else-if="result">
         <div class="browse-section-heading results-heading"><h2>共找到 {{ result.total }} 篇文章</h2><span>按最近更新排列</span></div>
         <div v-if="!result.records.length" class="browse-state">{{ result.total ? '该页没有文章，请返回第一页。' : '没有符合条件的文章，可以调整筛选条件。' }}</div>

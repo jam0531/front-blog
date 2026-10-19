@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { getTypes, getTags } from '../api/catalog.js'
 import BrowseShell from '../components/BrowseShell.vue'
@@ -20,7 +21,7 @@ onBeforeUnmount(() => controller.abort())
 <template>
   <BrowseShell title="分类与标签" description="从一个感兴趣的主题开始，慢慢读下去。" :meta="!loading && !error ? `${types.length} 个分类 · ${tags.length} 个标签` : ''">
     <div v-if="loading" class="browse-state" role="status">正在加载分类…</div>
-    <div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+    <div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载分类</button></div>
     <template v-else>
       <section aria-labelledby="category-heading">
         <div class="browse-section-heading"><h2 id="category-heading">按主题阅读</h2><span>不同主题，同样认真记录</span></div>

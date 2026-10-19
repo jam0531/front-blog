@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { getFriendLinks } from '../api/resources.js'
 import { webUrl } from '../utils/resourceUrl.js'
@@ -20,7 +21,7 @@ onBeforeUnmount(() => controller.abort())
 </script>
 <template>
   <BrowseShell title="山海有相逢" description="这里收录一些朋友的小站，愿每一次拜访都有新的发现。" :meta="!loading && !error ? `${friends.length} 个小站` : ''">
-    <div v-if="loading" class="browse-state" role="status">正在加载友链…</div><div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+    <div v-if="loading" class="browse-state" role="status">正在加载友链…</div><div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载友链</button></div>
     <p v-else-if="!friends.length" class="browse-state">友链正在慢慢收集中，期待下一次相逢。</p>
     <ul v-else class="friends-grid"><li v-for="friend in friends" :key="friend.id"><component :is="webUrl(friend.friendlinkAddress) ? 'a' : 'div'" :href="webUrl(friend.friendlinkAddress) || undefined" :target="webUrl(friend.friendlinkAddress) ? '_blank' : undefined" rel="noopener noreferrer" class="friend-card"><div class="friend-avatar"><ResourceImage :src="friend.friendlinkAvater" :alt="''" /></div><div class="friend-copy"><h2>{{ friend.friendlinkName || '友邻博客' }}</h2><p>{{ friend.friendlinkDescription || '去看看朋友的记录与分享。' }}</p><span>{{ webUrl(friend.friendlinkAddress) ? '拜访小站 ↗' : '地址暂不可用' }}</span></div></component></li></ul>
     <DiscussionThread :message-type="1" title="友链交流" />

@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPictures, getPictureArchives } from '../api/resources.js'
@@ -40,9 +41,9 @@ onBeforeUnmount(() => { controller?.abort(); optionsController.abort() })
 <template>
   <BrowseShell title="光影之间" description="留下一些风景，也留下一些值得记住的瞬间。" :meta="result ? `${result.total} 张图片` : ''">
     <div class="album-controls"><div class="browse-section-heading"><h2>{{ date || '全部照片' }}</h2><span>按最近收录排列</span></div><label>按日期浏览<select :value="date" @change="changeDate($event.target.value)"><option value="">全部日期</option><option v-if="date && !archives.some(item => item.date === date)" :value="date">{{ date }}</option><option v-for="archive in archives" :key="archive.date" :value="archive.date">{{ archive.date }} · {{ archive.pictureCount }} 张</option></select></label></div>
-    <p v-if="archiveError" class="album-error" role="status">{{ archiveError }} <button @click="loadArchives">重试</button></p>
+    <div v-if="archiveError" class="album-error"><ErrorNotice :error="archiveError" /><button @click="loadArchives">重新加载日期目录</button></div>
     <div v-if="loading" class="browse-state" role="status">正在翻开相册…</div>
-    <div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+    <div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载相册</button></div>
     <template v-else-if="result">
       <p v-if="!result.records.length" class="browse-state">{{ date ? '这一天还没有收录图片。' : '相册暂时为空。' }}</p>
       <div v-else class="album-grid"><RouterLink v-for="picture in result.records" :key="picture.id" class="album-item" :to="`/picture/${picture.id}`"><div class="album-photo"><ResourceImage :src="picture.piclink" :alt="picture.picName || picture.picDescription || '相册图片'" /></div><div class="album-caption"><h2>{{ picture.picName || '未命名的风景' }}</h2><span aria-hidden="true">↗</span><p v-if="picture.picDescription">{{ picture.picDescription }}</p><time :datetime="picture.createTime || undefined">{{ picture.createTime?.slice(0, 10) || '日期未记录' }}</time></div></RouterLink></div>

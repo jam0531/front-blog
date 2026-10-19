@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getHome } from '../api/home.js'
@@ -66,7 +67,7 @@ onBeforeUnmount(() => { controller?.abort(); homeController.abort() })
       </nav>
 
       <div v-if="loading" class="preview-state" role="status">正在加载文章…</div>
-      <div v-else-if="error" class="preview-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+      <div v-else-if="error" class="preview-state"><ErrorNotice :error="error" /><button @click="load">重新加载文章</button></div>
       <div v-else-if="!result?.records.length" class="preview-state">这一页暂时没有文章。</div>
       <template v-else>
         <template v-if="selected.id === 'editorial'">
@@ -92,7 +93,7 @@ onBeforeUnmount(() => { controller?.abort(); homeController.abort() })
         <div v-else class="gallery-grid" aria-label="图文文章"><LayoutPreviewPost v-for="blog in result.records" :key="blog.id" :blog="blog" variant="grid" /></div>
       </template>
       <Pagination v-if="result && !loading && !error" :page="result.page" :size="result.size" :total="result.total" @change="router.push({ query: { ...route.query, layout: selected.id, page: $event } })" />
-      <p v-if="homeError" class="preview-state" role="status">{{ homeError }} <button @click="loadHome">重试</button></p>
+      <div v-if="homeError" class="preview-state"><ErrorNotice :error="homeError" /><button @click="loadHome">重新加载栏目</button></div>
       <footer class="design-footer"><span>十二 · 把日常写成故事</span><RouterLink to="/archives">慢慢来，慢慢读 ↗</RouterLink></footer>
     </div>
     <p v-if="isPreview" class="reference-note">排版参考：<a href="https://ghost.org/themes/casper/" target="_blank" rel="noopener noreferrer">Ghost / Casper</a>、<a href="https://alistapart.com/" target="_blank" rel="noopener noreferrer">A List Apart</a>、<a href="https://www.smashingmagazine.com/" target="_blank" rel="noopener noreferrer">Smashing Magazine</a>。使用本站现有内容设计，三个方案均保留当前文章顺序。</p>

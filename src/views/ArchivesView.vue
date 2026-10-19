@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { getArchives } from '../api/catalog.js'
 import BrowseShell from '../components/BrowseShell.vue'
@@ -20,7 +21,7 @@ onBeforeUnmount(() => controller.abort())
 <template>
   <BrowseShell title="文章归档" description="按时间回望，看看那些留下来的文字。" :meta="!loading && !error ? `${articleCount} 篇文章 · ${archives.length} 个年份` : ''">
     <div v-if="loading" class="browse-state" role="status">正在加载归档…</div>
-    <div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+    <div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载归档</button></div>
     <section v-else aria-labelledby="archive-heading">
       <div class="browse-section-heading"><h2 id="archive-heading">时间的目录</h2><span>从最近的一年开始</span></div>
       <p v-if="!archives.length" class="browse-state">暂无文章归档。</p>

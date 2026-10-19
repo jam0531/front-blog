@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { getBackground } from '../api/home.js'
 const background = ref(null)
@@ -65,7 +66,7 @@ onBeforeUnmount(() => controller?.abort())
       <h1><span class="title-prefix">十二的</span><span>温馨小站</span></h1>
       <p class="cover-description">把生活中的点滴，<wbr />写成可以回看的故事。</p>
       <RouterLink to="/home" class="enter-button">进入博客 <span aria-hidden="true">↗</span></RouterLink>
-      <p v-if="error" class="cover-error" role="status">{{ error }}</p>
+      <ErrorNotice :error="error" />
     </section>
     <footer class="cover-footer">
       <span>记录生活，分享技术</span>
@@ -108,7 +109,6 @@ onBeforeUnmount(() => controller?.abort())
 .enter-button span { font-size: 20px; line-height: 1; transition: transform .2s ease; }
 .enter-button:hover { background: #f0eadc; color: #15343b; box-shadow: 0 5px 18px #06191e33; }
 .enter-button:hover span { transform: translate(2px, -2px); }
-.cover-error { margin: 16px 0 0; font-size: 13px; color: #fffdf7; }
 .cover-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 18px; padding-bottom: 22px; font-size: 11px; letter-spacing: .12em; color: #fffdf7d9; }
 .cover-footer::before { content: ""; position: absolute; left: 6.5%; right: 6.5%; height: 1px; background: #ffffff26; transform: translateY(-33px); }
 .cover-footer .motion-toggle { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 0 8px 12px; border: 0; background: transparent; color: inherit; font-size: 11px; }

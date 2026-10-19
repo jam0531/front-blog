@@ -1,4 +1,5 @@
 <script setup>
+import ErrorNotice from '../components/ErrorNotice.vue'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPicture } from '../api/resources.js'
@@ -25,7 +26,7 @@ onBeforeUnmount(() => controller?.abort())
 <template>
   <BrowseShell :title="picture?.picName || '一帧风景'" :description="picture?.picDescription || '把喜欢的瞬间，留在这里。'" :meta="picture?.createTime?.slice(0, 10)">
     <div v-if="loading" class="browse-state" role="status">正在加载图片…</div>
-    <div v-else-if="error" class="browse-state" role="alert"><p>{{ error }}</p><button @click="load">重试</button></div>
+    <div v-else-if="error" class="browse-state"><ErrorNotice :error="error" /><button @click="load">重新加载图片</button></div>
     <template v-else-if="picture"><figure class="picture-detail"><ResourceImage :src="picture.piclink" :alt="picture.picName || picture.picDescription || '相册图片'" eager /></figure><div class="picture-actions"><RouterLink :to="picture.createTime ? `/albumArchive/${picture.createTime.slice(0, 10)}` : '/album'">← 返回相册</RouterLink><a v-if="source" :href="source" target="_blank" rel="noopener noreferrer">查看原图 ↗</a></div></template>
   </BrowseShell>
 </template>
